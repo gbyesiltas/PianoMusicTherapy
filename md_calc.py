@@ -11,14 +11,18 @@ import matplotlib.pyplot as plt
 This script contains the main functions for getting the metrical deviation 
 over time from an audio or a MIDI recording of a therapy session
 
-export_as_midi --> takes in an audio file, or a midi file, gives the metrical deviation and exports the input piece as midi
+export_as_midi --> takes in an audio file, or a midi file, exports the input piece as midi
    If the input_type='audio', it uses the madmom piano transcription to export a MIDI file with three different channels
    one for therapist notes, one for patient notes, and one for the beats
 
-   If the input_type='midi', it calculates the metrical deviation directly using the MIDI, and exports a new MIDI file with
-   three different channels, the same as above
+   If the input_type='midi', it exports a new MIDI file with three different channels, the same as above
+   
+   The methods 'get_md_madmom' and 'get_md_control' can be used to not only export MIDI files, but also to
+   get the metrical deviation over the given audio or midi files. If a user wants to get that information as well, they can do so
+   using the same structure as was used for the 'calculate_md' method.
 
-calculate_md --> uses our CNN-based Onset Labelling for onset labelling, the odf can be given as an input
+calculate_md --> it calculates the metrical deviation over time for a given audio file. It uses our CNN-based Onset Labelling for onset labelling, the odf can be given as an input and shows a graph of the metrical deviation as the output. Different blocks can be used for the processing by changing the input parameters:
+
    the INOS odf --> odf='inos'
    the CNN-based madmom odf  --> odf='madmom', madmom_odf_method='madmom_cnn'
    the SuperFlux-based madmom odf --> odf='madmom', madmom_odf_method='superflux'
