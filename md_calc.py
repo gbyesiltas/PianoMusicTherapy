@@ -11,6 +11,19 @@ import matplotlib.pyplot as plt
 This script contains the main functions for getting the metrical deviation 
 over time from an audio or a MIDI recording of a therapy session
 
+
+calculate_md --> it calculates the metrical deviation over time for a given audio file. It uses our CNN-based Onset Labelling for onset labelling, the odf can be given as an input and shows a graph of the metrical deviation as the output. Different blocks can be used for the processing by changing the input parameters:
+
+   the INOS odf --> odf='inos'
+   the CNN-based madmom odf  --> odf='madmom', madmom_odf_method='madmom_cnn'
+   the SuperFlux-based madmom odf --> odf='madmom', madmom_odf_method='superflux'
+
+   the CNN-based Onset Labelling model can be: 'CQT_11', 'CQT_5', 'STFT_11', 'STFT_5'
+
+   the beggining and the end timestamps of Part B can be given with the "starting_times" parameters with a list like:
+   ["01:13","01:57"]
+   
+   
 export_as_midi --> takes in an audio file, or a midi file, exports the input piece as midi
    If the input_type='audio', it uses the madmom piano transcription to export a MIDI file with three different channels
    one for therapist notes, one for patient notes, and one for the beats
@@ -20,23 +33,42 @@ export_as_midi --> takes in an audio file, or a midi file, exports the input pie
    The methods 'get_md_madmom' and 'get_md_control' can be used to not only export MIDI files, but also to
    get the metrical deviation over the given audio or midi files. If a user wants to get that information as well, they can do so
    using the same structure as was used for the 'calculate_md' method.
-
-calculate_md --> it calculates the metrical deviation over time for a given audio file. It uses our CNN-based Onset Labelling for onset labelling, the odf can be given as an input and shows a graph of the metrical deviation as the output. Different blocks can be used for the processing by changing the input parameters:
-
-   the INOS odf --> odf='inos'
-   the CNN-based madmom odf  --> odf='madmom', madmom_odf_method='madmom_cnn'
-   the SuperFlux-based madmom odf --> odf='madmom', madmom_odf_method='superflux'
-
-   the CNN-based Onset Labelling model can be: 'CQT_11', 'CQT_5', 'STFT_11', 'STFT_5' 
-
-   the beggining and the end timestamps of Part B can be given with the "starting_times" parameters with a list like:
-   ["01:13","01:57"]
    
-
-We have three methods to get the metrical deviation with: 
-1) Control_MD : from the midi file of the session along with a midi file
+   
+The methods defined on this file make use of other methods we wrote to get the metrical deviation. These methods are:
+1) Control_MD : from the midi file of the session
 2) Madmom_MD : using the madmom piano transcription method for onset detection and labelling
 3) Ninos_CNN_MD : using the INOS/CNN_madmom/Superflux_madmom for onset detection + Our CNNOL for onset labelling
+
+
+For the madmom functions to work correctly:
+download madmom version 0.17dev using the the installation steps from the link below:
+https://github.com/rainerkelz/ISMIR19
+
+
+***Examples***
+
+- For getting the metrical deviation over time using the INOS for onset detection, and CNNOL with the STFT_11 model for onset labelling:
+    
+    file_name='test.wav'
+    md_list, md_mean, beats = calculate_md(file_name,modelname="STFT_11",odf='inos');
+    
+- For getting the metrical deviation over time using the madmom CNN for onset detection, and CNNOL with the CQT_11 model for onset labelling:
+
+    file_name='test.wav'
+    md_list, md_mean, beats = calculate_md(file_name,modelname="CQT_11",odf='madmom',madmom_odf_method='madmom_cnn');
+    
+- For getting the metrical deviation over time using a MIDI recording of the therapy session:
+
+    file_name='test.mid'
+    md_list, md_mean, beats = calculate_md(file_name, input_type='midi')
+    
+- For getting the piano transcription of the audio file using the madmom CNN-based piano transcription method:
+
+    file_name='test.wav'
+    export_as_midi(file_name)
+
+***Examples***
 
 """
 
@@ -85,4 +117,6 @@ def calculate_md(file_name, starting_times=None, input_type='audio',modelname='C
     plt.gca().set_ylim([-200,200])
 
     plt.show()
+    
+    return md_list,md_mean,beats
 
